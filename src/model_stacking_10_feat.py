@@ -1,3 +1,19 @@
+#---Model stacking---
+import os 
+import json
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_predict
+from sklearn.metrics import log_loss, accuracy_score
+from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.inspection import permutation_importance
+from scipy.stats import spearmanr
 def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
     #---CV setup, feature lists and base model definitions---
     RANDOM_STATE = 42
