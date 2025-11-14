@@ -21,7 +21,7 @@ def train_stacking_pipeline(train_df: pd.DataFrame, test_df: pd.DataFrame):
 
     # Build the full feature matrix and target vector
     ALL_FEATURES = [c for c in train_df.columns if c not in ['battle_id', 'player_won']]
-    X_full = train_df[ALL_FEATURES].values  # kept for completeness
+    X_full = train_df[ALL_FEATURES].values  
     y_target = train_df['player_won'].values.astype(int)
     X_test_full = test_df[ALL_FEATURES].values  # kept for completeness
 
@@ -37,7 +37,7 @@ def train_stacking_pipeline(train_df: pd.DataFrame, test_df: pd.DataFrame):
     print("\nNumero feature totali:", len(ALL_FEATURES))
     print("Feature LR_LITE (SUBSET_FEATURES):", SUBSET_FEATURES)
 
-    # Tier-0 base model definitions (same as original)
+    # Tier-0 base model definitions 
     TIER0_MODELS = {
         "LR_Full": {
             "features": ALL_FEATURES,
@@ -137,7 +137,7 @@ def train_stacking_pipeline(train_df: pd.DataFrame, test_df: pd.DataFrame):
 
     print("\n=== TRAINING BASE MODELS (con GridSearchCV + OOF) ===")
 
-    # Train, tune and evaluate base models (exact same loop as original)
+    # Train, tune and evaluate base models 
     for model_tag, cfg in TIER0_MODELS.items():
         feat_cols = cfg["features"]
         if len(feat_cols) == 0:
