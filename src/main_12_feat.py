@@ -1,5 +1,22 @@
+# main_10_feat.py
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import GridSearchCV
+
+from stacking_10_feat import (
+    TIER0_MODELS,
+    META_RESULTS,
+    best_meta_tag,
+    best_meta,
+    X_meta,
+    skf_splitter,
+    train_df,
+    test_df,
+    y_target,
+)
+
 def generate_submission(output_path: str):
-    #---Refit finale modelli base e stacking su test---
+    #---Final refit of base models and stacking on test---
     FINAL_TEST_PROB_LIST = []
 
     for model_tag, cfg in TIER0_MODELS.items():
@@ -33,19 +50,17 @@ def generate_submission(output_path: str):
     t_final = best_meta["best_threshold"]
     test_predictions = (test_meta_proba >= t_final).astype(int)
 
-    #---Generazione file di submission---
+    #---Submission file generation---
     submission_df = pd.DataFrame({
         'battle_id': test_df['battle_id'],
         'player_won': test_predictions
     })
 
-    
     submission_df.to_csv(output_path, index=False)
 
     print("\n'submission.csv' file created successfully!")
     print("Prime righe della submission:")
     display(submission_df.head())
-
 
 
 if __name__ == "__main__":
