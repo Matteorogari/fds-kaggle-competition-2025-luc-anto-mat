@@ -10,7 +10,7 @@ from sklearn.metrics import log_loss, accuracy_score
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 
-from config_12 import HAS_XGB, XGBClassifier
+from config_12_feat import HAS_XGB, XGBClassifier
 
 
 def train_stacking_pipeline(train_df: pd.DataFrame, test_df: pd.DataFrame):
