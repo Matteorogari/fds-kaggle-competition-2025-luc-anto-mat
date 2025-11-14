@@ -4,7 +4,7 @@ import json
 from tqdm import tqdm
 
 # Import constants and maps from constants module
-from constants import (
+from constants17 import (
     CONDITION_MALUS,
     TYPE_INTERACTIONS,
     W_SPEED_F,
