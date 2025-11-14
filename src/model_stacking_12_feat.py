@@ -1,4 +1,4 @@
-#---Costruzione feature matrix e anteprima---
+#---Features matrix construction---
 print("Processing training data...")
 train_df = compute_final_features(train_raw)
 
@@ -8,7 +8,7 @@ test_df = compute_final_features(test_raw)
 print("\nTraining features preview:")
 display(train_df.head())
 
-#---Setup parametri ML e selezione feature---
+#---Parameters setup and features selection---
 RANDOM_STATE = 42
 NUM_FOLDS = 5
 K_LIST = [7, 15, 20, 25, 30]
@@ -29,7 +29,7 @@ SUBSET_FEATURES = [f for f in SUBSET_FEATURES if f in train_df.columns]
 print("\nNumero feature totali:", len(ALL_FEATURES))
 print("Feature LR_LITE (SUBSET_FEATURES):", SUBSET_FEATURES)
 
-#---Definizione modelli base (Tier 0)---
+#---Base models definition---
 TIER0_MODELS = {
     "LR_Full": {
         "features": ALL_FEATURES,
@@ -96,7 +96,7 @@ TIER0_MODELS = {
     }
 }
 
-#---Opzionale: modello XGBoost base---
+#---Optional: base XGB-model---
 if HAS_XGB:
     TIER0_MODELS["XGB_Model"] = {
         "features": ALL_FEATURES,
@@ -117,7 +117,7 @@ if HAS_XGB:
         }
     }
 
-#---Cross-validation e training modelli base---
+#---Cross-validation and base models training---
 skf_splitter = StratifiedKFold(n_splits=NUM_FOLDS, shuffle=True, random_state=RANDOM_STATE)
 
 OOF_PROB_LIST = []
@@ -171,7 +171,7 @@ for model_tag, cfg in TIER0_MODELS.items():
     TEST_PROB_LIST.append(best_estimator.predict_proba(X_test_model)[:, 1])
     BASE_MODEL_TAGS.append(model_tag)
 
-#---Costruzione meta-modelli (STACKING, Tier 1)---
+#---Meta-models construction (STACKING)---
 print("\n=== COSTRUZIONE META-MODEL (STACKING) ===")
 
 X_meta = np.vstack(OOF_PROB_LIST).T
@@ -203,7 +203,7 @@ if HAS_XGB:
         random_state=RANDOM_STATE
     )
 
-#---Ricerca soglia e valutazione meta-modelli---
+#---threshold research and meta-models evaluation---
 META_RESULTS = {}
 
 threshold_grid = np.linspace(0.30, 0.70, 81)
