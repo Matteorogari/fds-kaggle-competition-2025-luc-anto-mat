@@ -1,6 +1,4 @@
-# ==========================================================
-# 1. SETUP and IMPORT
-# ==========================================================
+#---Setup and Import---
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -16,6 +14,7 @@ from constants17 import (
     HGBT_SEARCH_SPACE,
     TIER1_MODELS_DEF,
     HAS_XGB,
+    XGBC,          
 )
 from feature_engineering17 import (
     data_ingestion,
@@ -29,14 +28,11 @@ from modelling_utils17 import (
     analyze_meta_model_weights,
 )
 from sklearn.ensemble import RandomForestClassifier as RFC, HistGradientBoostingClassifier as HGBC
-from xgboost import XGBClassifier as XGBC  # safe because HAS_XGB checked before use
 
 
 def generate_submission(output_path: str):
 
-    # ==========================================================
-    # 2. DATA LOADING AND FEATURE ENGINEERING
-    # ==========================================================
+# Data loading  and feature engineering
 
     # Names of the subset features
     SUBSET_FEATURES = [
@@ -96,7 +92,7 @@ def generate_submission(output_path: str):
     }
 
     # Add XGB base model only if xgboost is available
-    if HAS_XGB:
+    if HAS_XGB and XGBC is not None:
         TIER0_MODELS['XGB_Model'] = (
             X_full,
             X_test_full,
@@ -111,9 +107,8 @@ def generate_submission(output_path: str):
             ),
         )
 
-    # ==========================================================
-    # 3. CROSS-VALIDATION OOF (Out-of-Fold)
-    # ==========================================================
+# Cross-validation OOF
+    
     OOF_PROBABILITIES = pd.DataFrame(index=X_full.index)
     skf_splitter = StratifiedKFold(
         n_splits=NUM_FOLDS,
@@ -150,10 +145,8 @@ def generate_submission(output_path: str):
         oof_logloss_val = log_loss(y_target, oof_array)
         print(f"Log_loss OOF {model_tag}: {oof_logloss_val:.6f}")
 
-    # ==========================================================
-    # 4. STACKING (META-MODEL) AND FINAL RESULT
-    # ==========================================================
-    # Always add a Logistic meta-model
+   #Stacking, Meta-model and final result
+    
     TIER1_MODELS_DEF['Logistic_Meta'] = LogisticRegression(
         C=0.5,
         solver='liblinear',
