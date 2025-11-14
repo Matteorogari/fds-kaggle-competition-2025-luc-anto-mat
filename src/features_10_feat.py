@@ -1,29 +1,7 @@
-#---Caricamento dati grezzi---
-train_raw = []
-print(f"Loading data from '{train_source}'...")
-try:
-    with open(train_source, 'r') as f:
-        for line in f:
-            train_raw.append(json.loads(line))
-    print(f"Successfully loaded {len(train_raw)} battles.")
-except FileNotFoundError:
-    print(f"ERROR: Could not find the training file at '{train_source}'.")
-
-train_raw = [battle for battle in train_raw if battle.get("battle_id") != 4877]
-
-test_raw = []
-print(f"Loading data from '{test_source}'...")
-try:
-    with open(test_source, 'r') as f:
-        for line in f:
-            test_raw.append(json.loads(line))
-    print(f"Successfully loaded {len(test_raw)} battles.")
-except FileNotFoundError:
-    print(f"ERROR: Could not find the test file at '{test_source}'.")
-
-
 #---Funzioni di feature engineering---
+
 def build_pokemon_stat_registry(battle_records: list[dict]):
+    # Costruisce un registro delle statistiche base dei Pokémon visti nei dati
     stat_registry = {}
     for battle in battle_records:
         pkmn_list = battle.get('p1_team_details', [])
@@ -39,6 +17,7 @@ def build_pokemon_stat_registry(battle_records: list[dict]):
 
 
 def extract_battle_summary(battle):
+    # Riassume lo stato dinamico della battaglia (HP, status e switch)
     p1_team_state = {
         pokemon.get('name', f'p1_unknown_{i}'): {
             'hp': 1.00,
@@ -88,6 +67,7 @@ def extract_battle_summary(battle):
 
 
 def compute_base_stat_differences(p1_team_state, p2_team_state, stat_registry):
+    # Calcola le differenze aggregate delle statistiche base tra i due team
     p1_total_speed = 0
     p2_total_speed = 0
     p1_total_attack = 0
@@ -125,6 +105,7 @@ def compute_base_stat_differences(p1_team_state, p2_team_state, stat_registry):
 
 
 def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
+    # Trasforma i record grezzi delle battaglie in una matrice di feature numeriche
     feature_matrix = []
     stat_registry = build_pokemon_stat_registry(source_data)
 
@@ -165,51 +146,78 @@ def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(feature_matrix).fillna(0)
 
 
-#---Costruzione feature table e analisi Spearman---
-print("Processing training data...")
-train_df = compute_final_features(train_raw)
+def build_feature_tables_and_spearman(train_source, test_source):
+     #---Caricamento dati grezzi---
+    train_raw = []
+    print(f"Loading data from '{train_source}'...")
+    try:
+        with open(train_source, 'r') as f:
+            for line in f:
+                train_raw.append(json.loads(line))
+        print(f"Successfully loaded {len(train_raw)} battles.")
+    except FileNotFoundError:
+        print(f"ERROR: Could not find the training file at '{train_source}'.")
 
-print("\nProcessing test data...")
-test_df = compute_final_features(test_raw)
+    # Rimuove la battaglia 4877 dal training per coerenza con la logica originale
+    train_raw = [battle for battle in train_raw if battle.get("battle_id") != 4877]
 
-print("\nTraining features preview:")
-display(train_df.head())
+    test_raw = []
+    print(f"Loading data from '{test_source}'...")
+    try:
+        with open(test_source, 'r') as f:
+            for line in f:
+                test_raw.append(json.loads(line))
+        print(f"Successfully loaded {len(test_raw)} battles.")
+    except FileNotFoundError:
+        print(f"ERROR: Could not find the test file at '{test_source}'.")
 
-BASE_FEATURES_10 = [
-    'p1_mean_pc_hp', 'p2_mean_pc_hp',
-    'p1_surviving_pokemon',
-    'p1_status_score', 'p2_status_score',
-    'speed_sum_diff', 'attack_sum_diff',
-    'sp_attack_sum_diff',
-    'sp_defense_sum_diff', 'hp_sum_diff'
-]
-BASE_FEATURES_10 = [f for f in BASE_FEATURES_10 if f in train_df.columns]
+    #---Costruzione feature table e analisi Spearman---
+    print("Processing training data...")
+    train_df = compute_final_features(train_raw)
 
-print("\n=== Spearman correlation tra le 10 feature ===")
-spearman_matrix = train_df[BASE_FEATURES_10].corr(method='spearman')
-display(spearman_matrix)
+    print("\nProcessing test data...")
+    test_df = compute_final_features(test_raw)
 
-print("\n=== Spearman & Partial Spearman vs target (player_won) ===")
-df_pc = train_df[BASE_FEATURES_10 + ['player_won']].copy()
+    print("\nTraining features preview:")
+    display(train_df.head())
 
-partial_rows = []
-for feat in BASE_FEATURES_10:
-    rho_simple, _ = spearmanr(df_pc[feat], df_pc['player_won'])
-    others = [f for f in BASE_FEATURES_10 if f != feat]
-    X_others = df_pc[others].values
-    n = X_others.shape[0]
-    X_design = np.hstack([np.ones((n, 1)), X_others])
-    beta_f, *_ = np.linalg.lstsq(X_design, df_pc[feat].values, rcond=None)
-    resid_f = df_pc[feat].values - X_design @ beta_f
-    beta_t, *_ = np.linalg.lstsq(X_design, df_pc['player_won'].values, rcond=None)
-    resid_t = df_pc['player_won'].values - X_design @ beta_t
-    rho_partial, _ = spearmanr(resid_f, resid_t)
-    partial_rows.append({
-        "feature": feat,
-        "spearman_vs_target": rho_simple,
-        "partial_spearman_vs_target": rho_partial
-    })
+    BASE_FEATURES_10 = [
+        'p1_mean_pc_hp', 'p2_mean_pc_hp',
+        'p1_surviving_pokemon',
+        'p1_status_score', 'p2_status_score',
+        'speed_sum_diff', 'attack_sum_diff',
+        'sp_attack_sum_diff',
+        'sp_defense_sum_diff', 'hp_sum_diff'
+    ]
+    BASE_FEATURES_10 = [f for f in BASE_FEATURES_10 if f in train_df.columns]
 
-partial_df = pd.DataFrame(partial_rows)
-partial_df = partial_df.sort_values(by="partial_spearman_vs_target", key=lambda c: np.abs(c), ascending=False)
-display(partial_df)
+    print("\n=== Spearman correlation tra le 10 feature ===")
+    spearman_matrix = train_df[BASE_FEATURES_10].corr(method='spearman')
+    display(spearman_matrix)
+
+    print("\n=== Spearman & Partial Spearman vs target (player_won) ===")
+    df_pc = train_df[BASE_FEATURES_10 + ['player_won']].copy()
+
+    partial_rows = []
+    for feat in BASE_FEATURES_10:
+        rho_simple, _ = spearmanr(df_pc[feat], df_pc['player_won'])
+        others = [f for f in BASE_FEATURES_10 if f != feat]
+        X_others = df_pc[others].values
+        n = X_others.shape[0]
+        X_design = np.hstack([np.ones((n, 1)), X_others])
+        beta_f, *_ = np.linalg.lstsq(X_design, df_pc[feat].values, rcond=None)
+        resid_f = df_pc[feat].values - X_design @ beta_f
+        beta_t, *_ = np.linalg.lstsq(X_design, df_pc['player_won'].values, rcond=None)
+        resid_t = df_pc['player_won'].values - X_design @ beta_t
+        rho_partial, _ = spearmanr(resid_f, resid_t)
+        partial_rows.append({
+            "feature": feat,
+            "spearman_vs_target": rho_simple,
+            "partial_spearman_vs_target": rho_partial
+        })
+
+    partial_df = pd.DataFrame(partial_rows)
+    partial_df = partial_df.sort_values(by="partial_spearman_vs_target", key=lambda c: np.abs(c), ascending=False)
+    display(partial_df)
+
+    return train_df, test_df, BASE_FEATURES_10, spearman_matrix, partial_df
