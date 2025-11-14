@@ -12,10 +12,9 @@ from model_stacking_10_feat import train_stacking_pipeline
 
 def generate_submission(output_path: str):
     # Initialize training and test file paths
-    # *** opzionale ma coerente: usiamo la funzione di init per ottenere i path ***
+    
     train_src, test_src = init_project_paths()
-    # in alternativa, avresti potuto lasciare:
-    # train_src, test_src = train_source, test_source
+    
 
     # Build feature tables and analysis outputs (Spearman and partial Spearman)
     (
