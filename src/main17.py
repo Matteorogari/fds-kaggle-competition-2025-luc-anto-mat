@@ -1,5 +1,5 @@
 # ========================================================== 
-# 1. SETUP e IMPORTAZIONE
+# 1. SETUP and IMPORT
 # ==========================================================
 import pandas as pd
 import numpy as np
@@ -25,10 +25,10 @@ from xgboost import XGBClassifier as XGBC
 def generate_submission(output_path: str):
     
     # ==========================================================
-    # 2. CARICAMENTO DATI E FEATURE ENGINEERING
+    # 2. DATA LOADING AND FEATURE ENGINEERING
     # ==========================================================
 
-    # I nomi delle features subset 
+    # The names of the subset features
     SUBSET_FEATURES = [
         'hp_avg_delta', 'survivor_count_delta', 'team_status_net_delta',
         'total_weighted_power_delta', 'switch_activity_log_ratio',
@@ -42,7 +42,7 @@ def generate_submission(output_path: str):
     train_features_df = compute_final_features(train_raw)
     test_features_df = compute_final_features(test_raw)
 
-    # Preparazione dei dati per il modello
+    # Data preparation for the model
     ALL_FEATURES = [
         col for col in train_features_df.columns
         if col not in ['battle_id', 'player_won']
@@ -54,7 +54,7 @@ def generate_submission(output_path: str):
     X_test_full = test_features_df[ALL_FEATURES].copy()
     X_test_lite = test_features_df[SUBSET_FEATURES].copy()
 
-    # Definizione dei modelli di Livello 0
+    # Definition of Level 0 models
     TIER0_MODELS = {
         'LR_Full': (
             X_full,
@@ -136,7 +136,7 @@ def generate_submission(output_path: str):
         print(f"Log_loss OOF {model_tag}: {oof_logloss_val:.6f}")
 
     # ==========================================================
-    # 4. STACKING (META-MODELLO) E RISULTATO FINALE
+    # 4. STACKING (META-MODEL) AND FINAL RESULT
     # ==========================================================
     TIER1_MODELS_DEF['Logistic_Meta'] = LogisticRegression(
         C=0.5,
@@ -169,7 +169,7 @@ def generate_submission(output_path: str):
                 X_tier1_test
             )[:, 1]
 
-    # Analisi dei pesi
+    # Weight Analysis
     winning_model = TIER1_MODELS_DEF[best_tier1_tag]
     analyze_meta_model_weights(
         best_tier1_tag,
@@ -177,7 +177,7 @@ def generate_submission(output_path: str):
         X_tier1_test
     )
 
-    # Risultato Finale e Submission
+    # Final Result and Submission
     final_test_predictions = (
         final_tier1_test_probs >= final_optimal_cutoff
     ).astype(int)
