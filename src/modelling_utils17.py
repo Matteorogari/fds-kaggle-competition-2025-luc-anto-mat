@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import accuracy_score
 
-from constants import C_VECTOR, RANDOM_SEARCH_COUNT  # Import the constants
+from constants17 import C_VECTOR, RANDOM_SEARCH_COUNT  # Import the constants
 
 
 def define_linear_grid_search(X_subset):
