@@ -7,7 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 
-# Importa la Logica dai Moduli (Assumi i file .py siano accessibili)
+
 from src.constants import (
     TRAIN_SOURCE, TEST_SOURCE, NUM_FOLDS,
     RF_SEARCH_SPACE, XGB_SEARCH_SPACE, HGBT_SEARCH_SPACE,
@@ -187,7 +187,7 @@ def generate_submission(output_path: str):
         'player_won': final_test_predictions
     })
 
-    # 👇 QUI uso output_path invece di 'submission.csv'
+   
     submission_df.to_csv(output_path, index=False)
 
     print("\n" + "=" * 30)
@@ -200,6 +200,6 @@ def generate_submission(output_path: str):
     display_frame_preview(submission_df)
 
 
-# Opzionale: se vuoi che il file sia eseguibile anche da solo
+
 if __name__ == "__main__":
     generate_submission("submission.csv")
