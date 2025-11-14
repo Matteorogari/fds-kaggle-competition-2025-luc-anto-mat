@@ -1,3 +1,18 @@
+#---Features engineering---
+import json 
+import os
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_predict
+from sklearn.metrics import log_loss, accuracy_score
+from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
 #---Raw data loading---
 train_raw = []
 print(f"Loading data from '{train_source}'...")
