@@ -5,9 +5,9 @@ import pandas as pd
 from sklearn.model_selection import GridSearchCV
 from IPython.display import display
 
-from config_12 import init_project_paths
-from features_12 import build_feature_tables
-from model_stacking_12 import train_stacking_pipeline
+from config_12_feat import init_project_paths
+from features_12_feat import build_feature_tables
+from model_stacking_12_feat import train_stacking_pipeline
 
 
 def generate_submission(output_path: str = "submission.csv"):
