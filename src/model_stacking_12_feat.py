@@ -1,4 +1,4 @@
-#---Features matrix construction---
+#---Feature matrix construction and preview---
 print("Processing training data...")
 train_df = compute_final_features(train_raw)
 
@@ -8,7 +8,7 @@ test_df = compute_final_features(test_raw)
 print("\nTraining features preview:")
 display(train_df.head())
 
-#---Parameters setup and features selection---
+#---ML parameter setup and feature selection---
 RANDOM_STATE = 42
 NUM_FOLDS = 5
 K_LIST = [7, 15, 20, 25, 30]
@@ -29,7 +29,7 @@ SUBSET_FEATURES = [f for f in SUBSET_FEATURES if f in train_df.columns]
 print("\nNumero feature totali:", len(ALL_FEATURES))
 print("Feature LR_LITE (SUBSET_FEATURES):", SUBSET_FEATURES)
 
-#---Base models definition---
+#---Base model definitions (Tier 0)---
 TIER0_MODELS = {
     "LR_Full": {
         "features": ALL_FEATURES,
@@ -96,7 +96,7 @@ TIER0_MODELS = {
     }
 }
 
-#---Optional: base XGB-model---
+#---Optional: XGBoost base model---
 if HAS_XGB:
     TIER0_MODELS["XGB_Model"] = {
         "features": ALL_FEATURES,
@@ -117,7 +117,7 @@ if HAS_XGB:
         }
     }
 
-#---Cross-validation and base models training---
+#---Cross-validation and base model training---
 skf_splitter = StratifiedKFold(n_splits=NUM_FOLDS, shuffle=True, random_state=RANDOM_STATE)
 
 OOF_PROB_LIST = []
@@ -171,7 +171,7 @@ for model_tag, cfg in TIER0_MODELS.items():
     TEST_PROB_LIST.append(best_estimator.predict_proba(X_test_model)[:, 1])
     BASE_MODEL_TAGS.append(model_tag)
 
-#---Meta-models construction (STACKING)---
+#---Meta-model construction (STACKING, Tier 1)---
 print("\n=== COSTRUZIONE META-MODEL (STACKING) ===")
 
 X_meta = np.vstack(OOF_PROB_LIST).T
@@ -203,7 +203,7 @@ if HAS_XGB:
         random_state=RANDOM_STATE
     )
 
-#---threshold research and meta-models evaluation---
+#---Threshold search and meta-model evaluation---
 META_RESULTS = {}
 
 threshold_grid = np.linspace(0.30, 0.70, 81)
@@ -270,3 +270,4 @@ print(f"LOG_LOSS FINALE (meta):      {best_meta['logloss']:.6f}")
 print(f"ACC_EFFETTIVA FINALE (CV):   {best_meta['acc_nested']:.6f}")
 print(f"Soglia finale usata (global): {best_meta['best_threshold']:.3f}")
 print("==============================\n")
+::contentReference[oaicite:0]{index=0}
