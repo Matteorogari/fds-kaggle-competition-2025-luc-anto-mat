@@ -4,16 +4,14 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
 
-
-from config_10_feat import init_project_paths
+from config_10_feat import init_project_paths, train_source, test_source
 from features_10_feat import build_feature_tables_and_spearman
 from model_stacking_10_feat import train_stacking_pipeline
 
 
 def generate_submission(output_path: str):
-   
     # Initialize training and test file paths
-    train_source, test_source = init_project_paths()
+    train_src, test_src = train_source, test_source
 
     # Build feature tables and analysis outputs (Spearman and partial Spearman)
     (
@@ -22,7 +20,7 @@ def generate_submission(output_path: str):
         BASE_FEATURES_10,
         spearman_matrix,
         partial_df,
-    ) = build_feature_tables_and_spearman(train_source, test_source)
+    ) = build_feature_tables_and_spearman(train_src, test_src)
 
     # Train Tier-0 base models and Tier-1 meta-models (stacking)
     (
