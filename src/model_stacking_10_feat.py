@@ -1,9 +1,11 @@
 #---Model stacking---
-import os 
+import os
 import json
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
+from IPython.display import display  # ensure display is available
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
@@ -14,6 +16,10 @@ from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassif
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
+
+from config_10_feat import HAS_XGB, XGBClassifier  # reuse xgboost availability flags
+
+
 def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
     #---CV setup, feature lists and base model definitions---
     RANDOM_STATE = 42
