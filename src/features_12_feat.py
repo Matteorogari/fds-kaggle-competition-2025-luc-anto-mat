@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 from IPython.display import display  # for previews in notebooks
 
-from config_12 import train_source, test_source
+from config_12_feat import train_source, test_source
 
 
 def load_raw_data(train_path: str, test_path: str):
