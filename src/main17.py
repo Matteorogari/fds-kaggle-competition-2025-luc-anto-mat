@@ -1,4 +1,4 @@
-# ========================================================== 
+# ==========================================================
 # 1. SETUP and IMPORT
 # ==========================================================
 import pandas as pd
@@ -7,28 +7,38 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 
-
 from src.constants import (
-    TRAIN_SOURCE, TEST_SOURCE, NUM_FOLDS,
-    RF_SEARCH_SPACE, XGB_SEARCH_SPACE, HGBT_SEARCH_SPACE,
-    TIER1_MODELS_DEF
+    TRAIN_SOURCE,
+    TEST_SOURCE,
+    NUM_FOLDS,
+    RF_SEARCH_SPACE,
+    XGB_SEARCH_SPACE,
+    HGBT_SEARCH_SPACE,
+    TIER1_MODELS_DEF,
+    HAS_XGB,
 )
-from src.feature_engineering import data_ingestion, compute_final_features, display_frame_preview
+from src.feature_engineering import (
+    data_ingestion,
+    compute_final_features,
+    display_frame_preview,
+)
 from src.modelling_utils import (
-    define_linear_grid_search, define_non_linear_random_search,
-    estimate_optimal_cutoff, analyze_meta_model_weights
+    define_linear_grid_search,
+    define_non_linear_random_search,
+    estimate_optimal_cutoff,
+    analyze_meta_model_weights,
 )
 from sklearn.ensemble import RandomForestClassifier as RFC, HistGradientBoostingClassifier as HGBC
-from xgboost import XGBClassifier as XGBC
+from xgboost import XGBClassifier as XGBC  # safe because HAS_XGB checked before use
 
 
 def generate_submission(output_path: str):
-    
+
     # ==========================================================
     # 2. DATA LOADING AND FEATURE ENGINEERING
     # ==========================================================
 
-    # The names of the subset features
+    # Names of the subset features
     SUBSET_FEATURES = [
         'hp_avg_delta', 'survivor_count_delta', 'team_status_net_delta',
         'total_weighted_power_delta', 'switch_activity_log_ratio',
@@ -51,6 +61,7 @@ def generate_submission(output_path: str):
     X_lite = train_features_df[SUBSET_FEATURES]
     y_target = train_features_df['player_won']
     N_TRAIN_SAMPLES = X_full.shape[0]
+
     X_test_full = test_features_df[ALL_FEATURES].copy()
     X_test_lite = test_features_df[SUBSET_FEATURES].copy()
 
@@ -59,30 +70,34 @@ def generate_submission(output_path: str):
         'LR_Full': (
             X_full,
             X_test_full,
-            define_linear_grid_search(X_full)
+            define_linear_grid_search(X_full),
         ),
         'LR_Lite': (
             X_lite,
             X_test_lite,
-            define_linear_grid_search(X_lite)
+            define_linear_grid_search(X_lite),
         ),
         'RF_Model': (
             X_full,
             X_test_full,
             define_non_linear_random_search(
                 RFC(random_state=42),
-                RF_SEARCH_SPACE
-            )
+                RF_SEARCH_SPACE,
+            ),
         ),
         'HGBT_Model': (
             X_full,
             X_test_full,
             define_non_linear_random_search(
                 HGBC(random_state=42),
-                HGBT_SEARCH_SPACE
-            )
+                HGBT_SEARCH_SPACE,
+            ),
         ),
-        'XGB_Model': (
+    }
+
+    # Add XGB base model only if xgboost is available
+    if HAS_XGB:
+        TIER0_MODELS['XGB_Model'] = (
             X_full,
             X_test_full,
             define_non_linear_random_search(
@@ -90,12 +105,11 @@ def generate_submission(output_path: str):
                     objective='binary:logistic',
                     use_label_encoder=False,
                     eval_metric='logloss',
-                    random_state=42
+                    random_state=42,
                 ),
-                XGB_SEARCH_SPACE
-            )
-        ),
-    }
+                XGB_SEARCH_SPACE,
+            ),
+        )
 
     # ==========================================================
     # 3. CROSS-VALIDATION OOF (Out-of-Fold)
@@ -104,7 +118,7 @@ def generate_submission(output_path: str):
     skf_splitter = StratifiedKFold(
         n_splits=NUM_FOLDS,
         shuffle=True,
-        random_state=42
+        random_state=42,
     )
     test_set_oof_preds = {}
 
@@ -132,22 +146,26 @@ def generate_submission(output_path: str):
 
         OOF_PROBABILITIES[model_tag] = oof_array
         test_set_oof_preds[model_tag] = test_preds_sum
+
         oof_logloss_val = log_loss(y_target, oof_array)
         print(f"Log_loss OOF {model_tag}: {oof_logloss_val:.6f}")
 
     # ==========================================================
     # 4. STACKING (META-MODEL) AND FINAL RESULT
     # ==========================================================
+    # Always add a Logistic meta-model
     TIER1_MODELS_DEF['Logistic_Meta'] = LogisticRegression(
         C=0.5,
         solver='liblinear',
-        random_state=42
+        random_state=42,
     )
+
     X_tier1_test = pd.DataFrame(test_set_oof_preds)
 
     best_tier1_tag = ""
     best_tier1_acc = 0.0
     final_optimal_cutoff = 0.0
+    final_tier1_test_probs = None
 
     print("\n" + "=" * 50)
     print("=== FASE DI STACKING: COSTRUZIONE META-MODELLO ===")
@@ -158,7 +176,7 @@ def generate_submission(output_path: str):
         tier1_oof_probs = tier1_model.predict_proba(OOF_PROBABILITIES)[:, 1]
         opt_cutoff, opt_acc = estimate_optimal_cutoff(
             y_target,
-            tier1_oof_probs
+            tier1_oof_probs,
         )
 
         if opt_acc > best_tier1_acc:
@@ -174,7 +192,7 @@ def generate_submission(output_path: str):
     analyze_meta_model_weights(
         best_tier1_tag,
         winning_model,
-        X_tier1_test
+        X_tier1_test,
     )
 
     # Final Result and Submission
@@ -184,10 +202,9 @@ def generate_submission(output_path: str):
 
     submission_df = pd.DataFrame({
         'battle_id': test_features_df['battle_id'],
-        'player_won': final_test_predictions
+        'player_won': final_test_predictions,
     })
 
-   
     submission_df.to_csv(output_path, index=False)
 
     print("\n" + "=" * 30)
@@ -199,6 +216,7 @@ def generate_submission(output_path: str):
     print(f"\nFile di submission generato: {output_path}")
     display_frame_preview(submission_df)
 
+    return submission_df
 
 
 if __name__ == "__main__":
