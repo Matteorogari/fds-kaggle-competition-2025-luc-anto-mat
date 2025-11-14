@@ -1,3 +1,4 @@
+#---Refit finale dei modelli base, predizione sul test e creazione submission---
 FINAL_TEST_PROB_LIST = []
 
 for model_tag, cfg in TIER0_MODELS.items():
