@@ -1,4 +1,5 @@
-#---Features engineering---
+
+#---Features engineering and model stacking---
 import json 
 import os
 import numpy as np
@@ -13,6 +14,10 @@ from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_pre
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
+
+from config_10_feat import HAS_XGB, XGBClassifier
+from features_10_feat import compute_final_features, train_raw, test_raw
+
 #---Feature matrix construction and preview---
 print("Processing training data...")
 train_df = compute_final_features(train_raw)
@@ -285,4 +290,3 @@ print(f"LOG_LOSS FINALE (meta):      {best_meta['logloss']:.6f}")
 print(f"ACC_EFFETTIVA FINALE (CV):   {best_meta['acc_nested']:.6f}")
 print(f"Soglia finale usata (global): {best_meta['best_threshold']:.3f}")
 print("==============================\n")
-::contentReference[oaicite:0]{index=0}
