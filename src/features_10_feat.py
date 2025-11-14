@@ -1,7 +1,7 @@
-#---Funzioni di feature engineering---
+#---Feature engineering functions---
 
 def build_pokemon_stat_registry(battle_records: list[dict]):
-    # Costruisce un registro delle statistiche base dei Pokémon visti nei dati
+    # Builds a registry of base stats for Pokémon seen in the data
     stat_registry = {}
     for battle in battle_records:
         pkmn_list = battle.get('p1_team_details', [])
@@ -17,7 +17,7 @@ def build_pokemon_stat_registry(battle_records: list[dict]):
 
 
 def extract_battle_summary(battle):
-    # Riassume lo stato dinamico della battaglia (HP, status e switch)
+    # Summarizes the dynamic battle state (HP, status and switches)
     p1_team_state = {
         pokemon.get('name', f'p1_unknown_{i}'): {
             'hp': 1.00,
@@ -67,7 +67,7 @@ def extract_battle_summary(battle):
 
 
 def compute_base_stat_differences(p1_team_state, p2_team_state, stat_registry):
-    # Calcola le differenze aggregate delle statistiche base tra i due team
+    # Computes aggregated differences of base stats between the two teams
     p1_total_speed = 0
     p2_total_speed = 0
     p1_total_attack = 0
@@ -105,7 +105,7 @@ def compute_base_stat_differences(p1_team_state, p2_team_state, stat_registry):
 
 
 def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
-    # Trasforma i record grezzi delle battaglie in una matrice di feature numeriche
+    # Converts raw battle records into a numerical feature matrix
     feature_matrix = []
     stat_registry = build_pokemon_stat_registry(source_data)
 
@@ -147,7 +147,7 @@ def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
 
 
 def build_feature_tables_and_spearman(train_source, test_source):
-     #---Caricamento dati grezzi---
+     #---Raw data loading---
     train_raw = []
     print(f"Loading data from '{train_source}'...")
     try:
@@ -158,7 +158,7 @@ def build_feature_tables_and_spearman(train_source, test_source):
     except FileNotFoundError:
         print(f"ERROR: Could not find the training file at '{train_source}'.")
 
-    # Rimuove la battaglia 4877 dal training per coerenza con la logica originale
+    # Removes battle 4877 from training for consistency with the original logic
     train_raw = [battle for battle in train_raw if battle.get("battle_id") != 4877]
 
     test_raw = []
@@ -171,7 +171,7 @@ def build_feature_tables_and_spearman(train_source, test_source):
     except FileNotFoundError:
         print(f"ERROR: Could not find the test file at '{test_source}'.")
 
-    #---Costruzione feature table e analisi Spearman---
+    #---Feature table construction and Spearman analysis---
     print("Processing training data...")
     train_df = compute_final_features(train_raw)
 
