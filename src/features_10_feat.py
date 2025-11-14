@@ -1,19 +1,51 @@
-#---Feature engineering functions---
-import os 
+#---Features engineering---
+import os
 import json
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from IPython.display import display  # ensure display is available in module scope
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_predict
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
+
+from config_10_feat import train_source, test_source  # reuse paths from config
+
+#---Raw data loading---
+train_raw = []
+print(f"Loading data from '{train_source}'...")
+try:
+    with open(train_source, 'r') as f:
+        for line in f:
+            train_raw.append(json.loads(line))
+    print(f"Successfully loaded {len(train_raw)} battles.")
+except FileNotFoundError:
+    print(f"ERROR: Could not find the training file at '{train_source}'.")
+    print("Please make sure you have added the competition data to this notebook.")
+
+# Remove battle 4877 for consistency with original logic
+train_raw = [battle for battle in train_raw if battle.get("battle_id") != 4877]
+
+test_raw = []
+print(f"Loading data from '{test_source}'...")
+try:
+    with open(test_source, 'r') as f:
+        for line in f:
+            test_raw.append(json.loads(line))
+    print(f"Successfully loaded {len(test_raw)} battles.")
+except FileNotFoundError:
+    print(f"ERROR: Could not find the test file at '{test_source}'.")
+
+
+#---Feature engineering functions---
 def build_pokemon_stat_registry(battle_records: list[dict]):
     # Builds a registry of base stats for Pokémon seen in the data
     stat_registry = {}
@@ -126,7 +158,14 @@ def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
     for battle in tqdm(source_data, desc="Extracting features"):
         current_features = {}
 
-        p1_swap_count, p1_effects, p1_team_state, p2_swap_count, p2_effects, p2_team_state = extract_battle_summary(battle)
+        (
+            p1_swap_count,
+            p1_effects,
+            p1_team_state,
+            p2_swap_count,
+            p2_effects,
+            p2_team_state,
+        ) = extract_battle_summary(battle)
 
         p1_mean_pc_hp = np.mean([info['hp'] for info in p1_team_state.values()])
         p2_mean_pc_hp = np.mean([info['hp'] for info in p2_team_state.values()])
@@ -137,14 +176,25 @@ def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
         p2_surviving_pokemon = sum(1 for info in p2_team_state.values() if info["hp"] > 0)
         current_features['p1_surviving_pokemon'] = p1_surviving_pokemon
 
-        p1_status_score = sum(1 for i in p1_team_state.values() if i['hp'] > 0 and i['status'] != 'nostatus') + p1_effects
-        p2_status_score = sum(1 for i in p2_team_state.values() if i['hp'] > 0 and i['status'] != 'nostatus') + p2_effects
+        p1_status_score = sum(
+            1 for i in p1_team_state.values() if i['hp'] > 0 and i['status'] != 'nostatus'
+        ) + p1_effects
+        p2_status_score = sum(
+            1 for i in p2_team_state.values() if i['hp'] > 0 and i['status'] != 'nostatus'
+        ) + p2_effects
         current_features['p1_status_score'] = p1_status_score
         current_features['p2_status_score'] = p2_status_score
 
-        speed_sum_diff, attack_sum_diff, sp_attack_sum_diff, sp_defense_sum_diff, hp_sum_diff = compute_base_stat_differences(
+        (
+            speed_sum_diff,
+            attack_sum_diff,
+            sp_attack_sum_diff,
+            sp_defense_sum_diff,
+            hp_sum_diff,
+        ) = compute_base_stat_differences(
             p1_team_state, p2_team_state, stat_registry
         )
+
         current_features['speed_sum_diff'] = speed_sum_diff
         current_features['attack_sum_diff'] = attack_sum_diff
         current_features['sp_attack_sum_diff'] = sp_attack_sum_diff
@@ -161,7 +211,7 @@ def compute_final_features(source_data: list[dict]) -> pd.DataFrame:
 
 
 def build_feature_tables_and_spearman(train_source, test_source):
-     #---Raw data loading---
+    #---Raw data loading---
     train_raw = []
     print(f"Loading data from '{train_source}'...")
     try:
@@ -231,7 +281,11 @@ def build_feature_tables_and_spearman(train_source, test_source):
         })
 
     partial_df = pd.DataFrame(partial_rows)
-    partial_df = partial_df.sort_values(by="partial_spearman_vs_target", key=lambda c: np.abs(c), ascending=False)
+    partial_df = partial_df.sort_values(
+        by="partial_spearman_vs_target",
+        key=lambda c: np.abs(c),
+        ascending=False
+    )
     display(partial_df)
 
     return train_df, test_df, BASE_FEATURES_10, spearman_matrix, partial_df
