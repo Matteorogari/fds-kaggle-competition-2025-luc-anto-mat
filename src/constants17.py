@@ -14,7 +14,10 @@ except Exception:
 
 # --- Configuration and Paths ---
 PROJECT_IDENTIFIER = 'fds-pokemon-battles-prediction-2025'
-RESOURCE_PATH = os.path.join('../input', PROJECT_IDENTIFIER)
+
+# Path for Kaggle: 
+RESOURCE_PATH = os.path.join('/kaggle/input', PROJECT_IDENTIFIER)
+
 TRAIN_SOURCE = os.path.join(RESOURCE_PATH, 'train.jsonl')
 TEST_SOURCE = os.path.join(RESOURCE_PATH, 'test.jsonl')
 
@@ -93,5 +96,5 @@ if HAS_XGB:
         )
     }
 else:
-    # No XGBoost available: start with an empty dict, will add Logistic_Meta later in main
+    
     TIER1_MODELS_DEF = {}
