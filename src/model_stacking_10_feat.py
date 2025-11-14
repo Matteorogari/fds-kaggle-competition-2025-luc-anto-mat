@@ -1,16 +1,16 @@
 def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
-    #---Setup CV, liste feature e definizione modelli base---
+    #---CV setup, feature lists and base model definitions---
     RANDOM_STATE = 42
     NUM_FOLDS = 5
     K_LIST = [7, 15, 20, 25, 30]
 
-    # Costruisce la matrice di feature completa e il vettore target
+    # Builds the full feature matrix and target vector
     ALL_FEATURES = BASE_FEATURES_10.copy()
     X_full = train_df[ALL_FEATURES].values
     y_target = train_df['player_won'].values.astype(int)
     X_test_full = test_df[ALL_FEATURES].values
 
-    # Definisce un sottoinsieme compatto di feature per il modello LR_Lite
+    # Defines a compact subset of features for the LR_Lite model
     SUBSET_FEATURES = [
         'p1_mean_pc_hp', 'p2_mean_pc_hp',
         'p1_surviving_pokemon',
@@ -22,7 +22,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
     print("\nNumero feature totali:", len(ALL_FEATURES))
     print("Feature LR_LITE (SUBSET_FEATURES):", SUBSET_FEATURES)
 
-    # Definisce lo spazio dei modelli di livello 0 (Tier-0) con stimatori e griglie iperparametri
+    # Defines the Tier-0 model space with estimators and hyperparameter grids
     TIER0_MODELS = {
         "LR_Full": {
             "features": ALL_FEATURES,
@@ -91,7 +91,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
         }
     }
 
-    # Aggiunge il modello XGBoost di base se la libreria è disponibile
+    # Adds the XGBoost base model if the library is available
     if HAS_XGB:
         TIER0_MODELS["XGB_Model"] = {
             "features": ALL_FEATURES,
@@ -112,17 +112,17 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
             }
         }
 
-    # Imposta la strategia di cross-validation stratificata
+    # Sets up the stratified cross-validation strategy
     cv_splitter = StratifiedKFold(n_splits=NUM_FOLDS, shuffle=True, random_state=RANDOM_STATE)
 
-    # Liste per memorizzare OOF e predizioni sul test dei modelli base
+    # Lists to store OOF and test predictions for base models
     OOF_PROB_LIST = []
     TEST_PROB_LIST = []
     BASE_MODEL_TAGS = []
 
     print("\n=== TRAINING BASE MODELS (con GridSearchCV + OOF + Permutation Importance) ===")
 
-    # Esegue training, ricerca iperparametri e valutazione OOF per ciascun modello base
+    # Trains, tunes and evaluates OOF performance for each base model
     for model_tag, cfg in TIER0_MODELS.items():
         feat_cols = cfg["features"]
         if len(feat_cols) == 0:
@@ -149,7 +149,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
         print("Best params:", grid.best_params_)
         print("CV log_loss (GridSearch best):", -grid.best_score_)
 
-        # Calcola le probabilità OOF tramite cross_val_predict
+        # Computes OOF probabilities via cross_val_predict
         oof_proba = cross_val_predict(
             best_estimator,
             X_model,
@@ -165,7 +165,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
         print(f"OOF log_loss {model_tag}: {oof_ll:.6f}")
         print(f"OOF accuracy (soglia 0.5) {model_tag}: {oof_acc_05:.6f}")
 
-        # Calcola l'importanza permutazionale delle feature dove applicabile
+        # Computes permutation feature importance where applicable
         try:
             if model_tag != "KNN_Model":
                 pi_res = permutation_importance(
@@ -183,21 +183,21 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
         except Exception as e:
             print(f"[WARN] permutation_importance fallita per {model_tag}: {e}")
 
-        # Memorizza le probabilità OOF e le predizioni sul test per il modello corrente
+        # Stores OOF probabilities and test predictions for the current model
         OOF_PROB_LIST.append(oof_proba)
         TEST_PROB_LIST.append(best_estimator.predict_proba(X_test_model)[:, 1])
         BASE_MODEL_TAGS.append(model_tag)
 
     print("\n=== COSTRUZIONE META-MODEL (STACKING) ===")
 
-    # Costruisce le matrici meta con le predizioni dei modelli base
+    # Builds meta matrices using base model predictions
     X_meta = np.vstack(OOF_PROB_LIST).T
     X_meta_test = np.vstack(TEST_PROB_LIST).T
 
     print("Base models usati nello stacking:", BASE_MODEL_TAGS)
     print("Forma X_meta:", X_meta.shape)
 
-    # Definisce il dizionario dei meta-modelli di livello 1
+    # Defines the dictionary of level-1 meta models
     TIER1_MODELS = {}
 
     TIER1_MODELS["Logistic_Meta"] = LogisticRegression(
@@ -222,11 +222,11 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
             random_state=RANDOM_STATE
         )
 
-    # Inizializza la struttura per raccogliere metriche e soglie ottimali
+    # Initializes the structure to collect metrics and optimal thresholds
     META_RESULTS = {}
     threshold_grid = np.linspace(0.30, 0.70, 81)
 
-    # Valuta ciascun meta-modello su OOF e ottimizza la soglia di classificazione
+    # Evaluates each meta model on OOF data and optimizes the classification threshold
     for meta_tag, meta_estimator in TIER1_MODELS.items():
         print(f"\n--- META MODEL: {meta_tag} ---")
 
@@ -244,7 +244,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
         print(f"OOF log_loss (meta, soglia libera): {meta_ll:.6f}")
         print(f"OOF accuracy (meta, soglia 0.5):    {acc_05:.6f}")
 
-        # Applica una nested validation per stimare la soglia ottimale per ogni fold
+        # Applies nested validation to estimate an optimal threshold for each fold
         nested_preds = np.zeros_like(y_target, dtype=int)
         for tr_idx, va_idx in cv_splitter.split(oof_meta_proba, y_target):
             y_tr = y_target[tr_idx]
@@ -264,7 +264,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
         acc_nested = accuracy_score(y_target, nested_preds)
         print(f"ACC_EFFETTIVA (nested threshold) {meta_tag}: {acc_nested:.6f}")
 
-        # Stima una soglia globale ottimale su tutta la distribuzione OOF
+        # Estimates a global optimal threshold on the full OOF distribution
         accs_per_t = [
             accuracy_score(y_target, (oof_meta_proba >= t).astype(int)) for t in threshold_grid
         ]
@@ -280,7 +280,7 @@ def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
             "best_threshold": float(best_t_global)
         }
 
-    # Identifica il meta-modello migliore in base all'accuracy nested
+    # Identifies the best meta model based on nested accuracy
     best_meta_tag = max(META_RESULTS, key=lambda k: META_RESULTS[k]["acc_nested"])
     best_meta = META_RESULTS[best_meta_tag]
 
