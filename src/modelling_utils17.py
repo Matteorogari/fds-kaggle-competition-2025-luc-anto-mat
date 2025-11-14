@@ -5,10 +5,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import accuracy_score
-from .constants import C_VECTOR, RANDOM_SEARCH_COUNT # Importa le costanti
+from .constants import C_VECTOR, RANDOM_SEARCH_COUNT # Import the constants
 
 def define_linear_grid_search(X_subset):
-    #Pipeline LR con standardizzazione e GridSearchCV (usiamo C_VECTOR)
+    #LR pipeline with standardization and GridSearchCV (we use C_VECTOR)
     pipeline = Pipeline([
         ('feature_scaler', StandardScaler()),
         ('base_classifier', LogisticRegression(solver='liblinear', random_state=42, max_iter=1000))
@@ -17,7 +17,7 @@ def define_linear_grid_search(X_subset):
     return GridSearchCV(pipeline, param_set, cv=3, scoring='neg_log_loss', refit=True, n_jobs=-1)
 
 def define_non_linear_random_search(model_inst, param_distribution):
-    #RandomizedSearchCV per modelli non lineari 
+    #RandomizedSearchCV for nonlinear models
     return RandomizedSearchCV(
         model_inst,
         param_distributions=param_distribution,
@@ -30,7 +30,7 @@ def define_non_linear_random_search(model_inst, param_distribution):
     )
 
 def estimate_optimal_cutoff(y_true, y_pred_proba):
-    #la soglia di probabilità che massimizza l'accuratezza
+    #the probability threshold that maximizes accuracy
     best_acc, opt_thresh = 0, 0.5
     for cutoff_value in np.linspace(0.4, 0.6, 101):
         acc = accuracy_score(y_true, (y_pred_proba >= cutoff_value).astype(int))
@@ -38,7 +38,7 @@ def estimate_optimal_cutoff(y_true, y_pred_proba):
     return opt_thresh, best_acc
 
 def analyze_meta_model_weights(best_tier1_tag, winning_model, X_tier1_test):
-    #Stampa dell'importanza/pesi delle feature (predizioni Tier-0) nello Stacking
+    #Printing the importance/weights of features (Tier-0 predictions) in Stacking
     print("\n" + "="*50)
     print("=== ANALISI DEI PESI DEL META-MODELLO VINCITORE ===")
     print("===================================================")
