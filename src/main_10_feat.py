@@ -1,5 +1,42 @@
+# ---Main---
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import GridSearchCV
+
+
+from config_10_feat import init_project_paths
+from features_10_feat import build_feature_tables_and_spearman
+from model_stacking_10_feat import train_stacking_pipeline
+
+
 def generate_submission(output_path: str):
-    
+   
+    # Initialize training and test file paths
+    train_source, test_source = init_project_paths()
+
+    # Build feature tables and analysis outputs (Spearman and partial Spearman)
+    (
+        train_df,
+        test_df,
+        BASE_FEATURES_10,
+        spearman_matrix,
+        partial_df,
+    ) = build_feature_tables_and_spearman(train_source, test_source)
+
+    # Train Tier-0 base models and Tier-1 meta-models (stacking)
+    (
+        TIER0_MODELS,
+        META_RESULTS,
+        best_meta_tag,
+        best_meta,
+        X_meta,
+        X_meta_test,
+        y_target,
+        cv_splitter,
+    ) = train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10)
+
+    # Final refit of base models and prediction on the test set
     FINAL_TEST_PROB_LIST = []
 
     for model_tag, cfg in TIER0_MODELS.items():
@@ -24,8 +61,10 @@ def generate_submission(output_path: str):
         best_estimator = grid.best_estimator_
         FINAL_TEST_PROB_LIST.append(best_estimator.predict_proba(X_test_model)[:, 1])
 
+    # Build the final meta-feature matrix on the test set
     X_meta_test_final = np.vstack(FINAL_TEST_PROB_LIST).T
 
+    # Final refit of the best meta-model and prediction on the test set
     final_meta_model = META_RESULTS[best_meta_tag]["estimator"]
     final_meta_model.fit(X_meta, y_target)
 
@@ -33,18 +72,19 @@ def generate_submission(output_path: str):
     t_final = best_meta["best_threshold"]
     test_predictions = (test_meta_proba >= t_final).astype(int)
 
+    # Build and save the submission file
     submission_df = pd.DataFrame({
         'battle_id': test_df['battle_id'],
         'player_won': test_predictions
     })
 
-    
     submission_df.to_csv(output_path, index=False)
 
-    print("\n'submission.csv' file created successfully!")
-    print("Prime righe della submission:")
-    display(submission_df.head())
+    print(f"\nSubmission file created successfully at: {output_path}")
+    print("First rows of the submission:")
+    print(submission_df.head())
 
+    return submission_df
 
 
 if __name__ == "__main__":
