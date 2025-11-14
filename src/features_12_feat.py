@@ -1,3 +1,4 @@
+
 #---Features engineering---
 import json 
 import os
@@ -13,6 +14,9 @@ from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_pre
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
+
+from config_10_feat import train_source, test_source  # uses paths defined in config
+
 #---Raw data loading---
 train_raw = []
 print(f"Loading data from '{train_source}'...")
