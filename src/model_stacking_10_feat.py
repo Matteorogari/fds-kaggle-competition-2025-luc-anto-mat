@@ -18,7 +18,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
 
-from config_10_feat import HAS_XGB, XGBClassifier  # reuse xgboost availability flags
+from config_12_feat import HAS_XGB, XGBClassifier  # reuse xgboost availability flags
 
 
 def train_stacking_pipeline(train_df, test_df, BASE_FEATURES_10):
