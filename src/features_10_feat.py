@@ -1,5 +1,19 @@
 #---Feature engineering functions---
+import os 
+import json
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_predict
+from sklearn.metrics import log_loss, accuracy_score
+from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.inspection import permutation_importance
+from scipy.stats import spearmanr
 def build_pokemon_stat_registry(battle_records: list[dict]):
     # Builds a registry of base stats for Pokémon seen in the data
     stat_registry = {}
