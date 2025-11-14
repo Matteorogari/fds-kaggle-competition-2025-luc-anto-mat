@@ -1,3 +1,5 @@
+#---Setup CV, liste feature e definizione modelli base--- 
+
 RANDOM_STATE = 42
 NUM_FOLDS = 5
 K_LIST = [7, 15, 20, 25, 30]
