@@ -14,13 +14,14 @@ from sklearn.metrics import log_loss, accuracy_score
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 
+# Safely handle optional xgboost dependency
 try:
     from xgboost import XGBClassifier
     HAS_XGB = True
 except Exception:
     HAS_XGB = False
     XGBClassifier = None
-    print("[WARN] xgboost non disponibile: il modello XGB verrà saltato.")
+    print("[WARN] xgboost not available: XGB model will be skipped.")
 
 #---Project initialization---
 PROJECT_IDENTIFIER = 'fds-pokemon-battles-prediction-2025'
