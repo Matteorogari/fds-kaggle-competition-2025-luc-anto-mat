@@ -26,6 +26,7 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
     for filename in filenames:
         print(os.path.join(dirname, filename))
 
+#---Inizializzazione del progetto---
 PROJECT_IDENTIFIER = 'fds-pokemon-battles-prediction-2025'
 RESOURCE_PATH = os.path.join('../input', PROJECT_IDENTIFIER)
 train_source = os.path.join(RESOURCE_PATH, 'train.jsonl')
