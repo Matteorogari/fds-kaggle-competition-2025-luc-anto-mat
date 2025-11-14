@@ -1,4 +1,4 @@
-#---Caricamento dati grezzi---
+#---Raw data loading---
 train_raw = []
 print(f"Loading data from '{train_source}'...")
 try:
@@ -23,7 +23,7 @@ except FileNotFoundError:
     print(f"ERROR: Could not find the test file at '{test_source}'.")
 
 
-#---Funzioni di feature engineering---
+#---Feature engineering functions---
 def build_pokemon_stat_registry(battle_records: list[dict]):
     stat_registry = {}
     for battle in battle_records:
