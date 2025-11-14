@@ -14,7 +14,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
 
-# Gestisce in modo sicuro la disponibilità del pacchetto xgboost
+# Safely handles availability of the xgboost package
 try:
     from xgboost import XGBClassifier
     HAS_XGB = True
@@ -23,15 +23,15 @@ except Exception:
     XGBClassifier = None
     print("[WARN] xgboost non disponibile: il modello XGB verrà saltato.")
 
-# Inizializza i percorsi di progetto e i file sorgente per train e test.
+# Initializes project paths and source files for train and test.
 def init_project_paths():
     
-    # Scansiona la struttura di /kaggle/input per mostrare i file disponibili
+    # Scans the /kaggle/input tree to show available files
     for dirname, _, filenames in os.walk('/kaggle/input'):
         for filename in filenames:
             print(os.path.join(dirname, filename))
 
-    # Inizializzazione del progetto
+    # Project initialization
     PROJECT_IDENTIFIER = 'fds-pokemon-battles-prediction-2025'
     RESOURCE_PATH = os.path.join('../input', PROJECT_IDENTIFIER)
     train_source = os.path.join(RESOURCE_PATH, 'train.jsonl')
