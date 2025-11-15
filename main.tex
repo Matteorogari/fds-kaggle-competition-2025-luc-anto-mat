@@ -1,10 +1,12 @@
 \documentclass[10pt,twocolumn,letterpaper]{article}
 
 %%%%%%%%% GESTIONE DEL PACCHETTO CVPR
-\usepackage[final]{cvpr} 
+\usepackage[review]{cvpr} % Utilizziamo [review] per coerenza con il formato richiesto
 \usepackage{times}
-\linespread{0.98}\selectfont
-\setlength{\parskip}{0pt}
+\linespread{0.98}\selectfont % Riduzione dell'interlinea (densificazione verticale)
+\setlength{\parskip}{0pt} % Rimozione dello spazio tra i paragrafi
+\usepackage{etoolbox} % <--- AGGIUNTO: Necessario per \patchcmd
+
 % Import additional packages in the preamble file, before hyperref
 \input{preamble}
 
@@ -27,12 +29,17 @@ Università degli Studi di Roma "La Sapienza"\\
 }
 
 \begin{document}
+
+% --- INIZIO PATCH PER SPOSTARE IL TITOLO IN ALTO ---
 \makeatletter
-% Rimuove lo spazio verticale all'inizio del documento (da .375in a .15in)
-\patchcmd{\@maketitle}{\vskip .375in}{\vskip .15in}{}{}
-% Rimuove lo spazio verticale sotto il blocco autori (da 12pt a 0pt)
+% La patch deve avvenire DOPO \begin{document} e PRIMA di \maketitle
+% Rimuove lo spazio verticale all'inizio del documento (da .375in a .15in per spostare in alto)
+\patchcmd{\@maketitle}{\vskip .375in}{\vskip .15in}{}{} 
+% Rimuove lo spazio verticale sotto il blocco autori (da 12pt a 0pt per compattare)
 \patchcmd{\@maketitle}{\vspace*{12pt}}{\vspace*{0pt}}{}{}
 \makeatother
+
+\maketitle % <--- AGGIUNTO: QUESTO COMANDO STAMPA IL TITOLO E GLI AUTORI
 
 % INCLUSIONE DELLE NUOVE SEZIONI NELL'ORDINE CORRETTO
 \input{sec/0_abstract}  
@@ -42,6 +49,7 @@ Università degli Studi di Roma "La Sapienza"\\
 
 
 /*
+% Blocco bibliografia lasciato commentato
 {
     \small
     \bibliographystyle{ieeenat_fullname}
@@ -54,4 +62,3 @@ Università degli Studi di Roma "La Sapienza"\\
 % \input{sec/X_suppl}
 
 \end{document}
-
