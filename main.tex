@@ -27,7 +27,12 @@ Università degli Studi di Roma "La Sapienza"\\
 }
 
 \begin{document}
-\maketitle
+\makeatletter
+% Rimuove lo spazio verticale all'inizio del documento (da .375in a .15in)
+\patchcmd{\@maketitle}{\vskip .375in}{\vskip .15in}{}{}
+% Rimuove lo spazio verticale sotto il blocco autori (da 12pt a 0pt)
+\patchcmd{\@maketitle}{\vspace*{12pt}}{\vspace*{0pt}}{}{}
+\makeatother
 
 % INCLUSIONE DELLE NUOVE SEZIONI NELL'ORDINE CORRETTO
 \input{sec/0_abstract}  
