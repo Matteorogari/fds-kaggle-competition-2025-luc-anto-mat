@@ -7,6 +7,7 @@ The analysis demonstrates that prediction accuracy and reliability (Log Loss) ar
 \centering
 \caption{Comparative Performance of Explored Methodologies}
 \label{tab:performance}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{l|c|c|c|c}
 \toprule
 Methodology & N. Features & Tier-1 Meta-Model & LOG\_LOSS (OOF) & Max Accuracy (CV) \\
@@ -16,6 +17,7 @@ Intermediate Set & 12 & XGBoost & 0.363638 & 0.848485 \\
 Restricted Set & 10 & LR & 0.364878 & 0.849785 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \subsection{Role of the Meta-Model (Tier-1)}
@@ -25,6 +27,7 @@ The weight analysis of the successfully implemented Meta-Model (XGBoost on 17 fe
 \centering
 \caption{Tier-1 Model Weights (XGBoost Meta on 17 Features)}
 \label{tab:weights}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{l|c|l}
 \toprule
 Base Model & Importance (Weight) & Justification \\
@@ -34,6 +37,7 @@ LR (Full) & $36.85\%$ & Reinforces the linear component of the prediction. \\
 XGBoost / HGBT / RF & $20.34\%$ & Adds the capacity to correct complex classification errors that LR, by its nature, cannot resolve. \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 This outcome justifies the Stacking approach: simpler models (LR) form the stable base, while boosting models (XGBoost) refine the final result.
