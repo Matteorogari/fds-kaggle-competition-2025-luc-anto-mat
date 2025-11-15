@@ -1,0 +1,32 @@
+\section{Feature Engineering and Modeling Architecture}
+
+\subsection{Feature Engineering and Data Structure}
+Feature engineering was guided by the goal of quantitatively representing the battle's final state based on core game mechanics (condition, power, and type interactions). 
+Features were grouped into three main sets to evaluate the impact of dimensionality on prediction:
+
+\paragraph{Core Features (10 and 12 Sets):}
+These features encode attrition and static potential, and include:
+\begin{itemize}
+    \item Delta Mean HP and Delta Survivors: Direct indicators of residual health and remaining fighting reserve.
+    \item Delta Status/Effect Score: Measures the strategic pressure exerted on a team via status ailments (e.g., poison) or field effects (e.g., hazards).
+    \item Total Stat Differences: Deltas in the sums of base statistics ($\Delta$ Atk, $\Delta$ Spe, $\Delta$ HP) across all Pokémon, used to model the raw static power advantage.
+\end{itemize}
+
+\paragraph{Strategic Features (17 Set Only):}
+To enhance predictive reliability, features capturing complex strategic and dynamic aspects were added:
+\begin{itemize}
+    \item Meta Type Advantage Metric: Features calculated based on cross-damage multipliers between a team's offensive types and the opponent's defensive resistances. \textit{Rationale:} The type system is the most critical $matchup$ mechanic; its inclusion is strategic.
+    \item Weighted Active Leader Power: An index calculated on the stats of the active Pokémon in the last turn, with higher weight assigned to Speed (Spe), to reflect the strategic value of initiative.
+\end{itemize}
+
+\subsection{Stacking Ensemble Architecture}
+All methodologies adopted a \textbf{Stacking Ensemble} architecture, justified by the necessity of combining the stability of linear models with the non-linearity resolving power of tree-based models. 
+
+\paragraph{Tier-0 Base Learners:}
+The model set was diversified to ensure the complementarity of Out-Of-Fold (OOF) predictions:
+\begin{itemize}
+    \item Logistic Regression (LR): Provides a low-bias, high-stability prediction. Its OOF probabilities are less correlated with those of tree models, making them a valuable input for the Tier-1.
+    \item Boosting Models (XGBoost, HGBT): Trained to capture non-linear interactions between features. Although more prone to variance, they offer high accuracy on complex problems.
+    \item Random Forest and KNN: Included to provide ensemble (RF) and non-parametric (KNN) methods capturing different data perspectives.
+\end{itemize}
+Hyperparameter calibration for all models was performed via \texttt{GridSearchCV} or \texttt{RandomizedSearchCV} using the \textbf{Log Loss} as the primary scoring metric.
