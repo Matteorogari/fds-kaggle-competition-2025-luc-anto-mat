@@ -1,10 +1,7 @@
 \documentclass[10pt,twocolumn,letterpaper]{article}
 
-%%%%%%%%% GESTIONE DEL PACCHETTO CVPR (CORREZIONE ERRORE)
-% Devi caricare [cvpr] una sola volta con l'opzione desiderata
-%\usepackage{cvpr}
-\usepackage[review]{cvpr}
-%\usepackage[pagenumbers]{cvpr} 
+%%%%%%%%% GESTIONE DEL PACCHETTO CVPR
+\usepackage[review]{cvpr} 
 
 % Import additional packages in the preamble file, before hyperref
 \input{preamble}
@@ -21,9 +18,9 @@
 \title{Super-Team of Trainers: Modeling Complex Outcomes with an Ensemble Stacking Approach to Pokémon Battle Prediction}
 
 
-%%%%%%%%% AUTHORS - CORREZIONE SINTASSI
+%%%%%%%%% AUTHORS 
 \author{Matteo Rogari \and Antonietta De Lucia \and Luca Russo\\
-Institution Name\\ % Aggiungi qui l'istituzione
+Università degli Studi di Roma "La Sapienza"\\
 {\tt\small \{rogari.2081066, delucia.2021746, russo.2062919\}@studenti.uniroma1.it}
 }
 
@@ -36,15 +33,18 @@ Institution Name\\ % Aggiungi qui l'istituzione
 \input{sec/2_feature_engineering}
 \input{sec/3_finalcopy}
 
-% --- INIZIO: Soluzione per bibliografia assente ---
 
+/*
+{
     \small
-    
-    \end{thebibliography}
-
-% --- FINE: Soluzione per bibliografia assente ---
+    \bibliographystyle{ieeenat_fullname}
+    \bibliography{main}
+}
+*/
+% --------------------------------------------------
 
 % WARNING: do not forget to delete the supplementary pages from your submission 
 % \input{sec/X_suppl}
 
 \end{document}
+
