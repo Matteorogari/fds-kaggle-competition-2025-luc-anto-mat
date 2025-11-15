@@ -1,0 +1,7 @@
+\begin{abstract}
+This report analyzes the machine learning methodologies developed for the Pokémon Battle Prediction competition (Competition ID: \texttt{fds-pokemon-battles-prediction-2025}). 
+The problem is modeled as a binary classification task to estimate Player 1's victory probability, based on three systematically varied sets of input features. 
+The core approach across all implementations is a **Two-Level Stacking Ensemble**, which leverages the complementarity between linear predictors (Logistic Regression) and boosting models (XGBoost, HGBT). 
+The methodology incorporating the most comprehensive **17-feature set** was adopted as the **final strategy** due to its superior performance, achieving a lowest **Log Loss of $0.347578$** and a cross-validated accuracy(in the local) of **$85.26\%$**. 
+The results strongly demonstrate that integrating domain-specific metrics, specifically those that quantify **strategic type advantage** and **residual in-battle power**, is essential for maximizing predictive reliability.
+\end{abstract}
