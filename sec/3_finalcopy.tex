@@ -44,7 +44,9 @@ This outcome justifies the Stacking approach: simpler models (LR) form the stabl
 
 \paragraph{Meta-Model Selection based on Feature Set:}
 It is observed that when using the Restricted Set (10 features), the most effective Meta-Model was the Logistic Regression (LR Meta). This suggests that for less complex inputs, the interactions between Tier-0 models are already largely linear, not justifying the added complexity of an XGBoost Meta-Model.
-\columnbreak
+\par
+\vfill % Riempie lo spazio verticale rimanente
+\break % <--- Utilizza il comando nativo \break
 \subsection{Final Calibration}
 The optimal classification threshold determined for the 17-feature methodology was $\mathbf{0.466}$. This value, lower than the neutral threshold of $0.5$, indicates that the aggregated model tended to be slightly conservative in predicting Player 1's victory, and threshold optimization was necessary to maximize overall accuracy on the validation set.
 
