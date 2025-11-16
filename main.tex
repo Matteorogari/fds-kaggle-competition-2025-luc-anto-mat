@@ -19,7 +19,8 @@
 \def\paperID{3245} 
 \def\confName{CVPR}
 \def\confYear{2026}
-
+\setlength{\voffset}{-0.5in}  % Sposta l'intera pagina in su di 0.5 pollici
+\setlength{\topmargin}{-0.5in} % Regola il margine superiore (opzionale, ma consigliato)
 \title{}
 %%%%%%%%% AUTHORS 
 \author{Matteo Rogari \and Antonietta De Lucia \and Luca Russo\\
@@ -32,7 +33,7 @@ Università degli Studi di Roma "La Sapienza"\\
 % --- INIZIO PATCH PER SPOSTARE IL TITOLO IN ALTO ---
 \makeatletter
 % Rimuove lo spazio verticale all'inizio del documento (da .375in a -0.5in per spostare in alto)
-\patchcmd{\@maketitle}{\vskip .375in}{\vskip -1.2in}{}{} % <--- CAMBIA QUI: esempio con valore negativo
+\patchcmd{\@maketitle}{\vskip .375in}{\vskip}{}{} % <--- CAMBIA QUI: esempio con valore negativo
 % Rimuove lo spazio verticale sotto il blocco autori (da 12pt a 0pt per compattare)
 \patchcmd{\@maketitle}{\vspace*{12pt}}{\vspace*{0pt}}{}{}
 \makeatother
