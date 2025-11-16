@@ -1,21 +1,14 @@
 \section{Methodological Analysis and Results Summary}
-
 \subsection{Performance and Feature Impact}
 The analysis confirmed a direct relationship between the \textbf{richness of strategic features} and prediction performance. The \textbf{Strategic Set (17 Features)} yielded the best result (Log Loss $0.347578$), significantly outperforming simpler feature sets (refer to Table \ref{tab:performance} in the Appendix).
-
 \subsection{Stacking Ensemble Role}
-The primary function of the Tier-1 Meta-Model (XGBoost) was to \textbf{balance linear and non-linear predictive signals}. Linear models (LR) formed the stable foundation (contributing the majority of weight), while boosting models (XGBoost/HGBT) provided the necessary refinement to correct complex classification errors (detailed in Table \ref{tab:weights}). This outcome fully justifies the **Stacking Ensemble** approach.
+The primary function of the Tier-1 Meta-Model (XGBoost) was to \textbf{balance linear and non-linear predictive signals}. Linear models (LR) formed the stable foundation (contributing the majority of weight), while boosting models (XGBoost/HGBT) provided the necessary refinement to correct complex classification errors (detailed in Table \ref{tab:weights}). This outcome fully justifies the \textbf{Stacking Ensemble} approach.
+\noindent
 \par
 \paragraph{Meta-Model Selection:} When using the less complex Restricted Set (10 features), the optimal Meta-Model was Logistic Regression (LR Meta), suggesting that for lower dimensionality inputs, the added complexity of XGBoost was unnecessary.
-
 \subsection{Classification Threshold Calibration}
-The **optimal classification threshold** was set at $\mathbf{0.466}$ (lower than the neutral $0.5$). This adjustment was crucial to maximize overall accuracy, compensating for the aggregated model's slight tendency to be conservative in predicting Player 1's victory.
-
+The \textbf{optimal classification threshold} was set at $\mathbf{0.466}$ (lower than the neutral $0.5$). This adjustment was crucial to maximize overall accuracy, compensating for the aggregated model's slight tendency to be conservative in predicting Player 1's victory.
 \section{Conclusions}
 Maximum accuracy ($85.26\%$) in the Pokémon battle prediction task was achieved by integrating three methodological elements: 
-\begin{enumerate}
-    \item \textbf{Domain-specific feature engineering} (e.g., type advantage).
-    \item Use of a \textbf{Stacking Ensemble} to combine linear and non-linear signals.
-    \item \textbf{Threshold calibration} ($\mathbf{0.466}$).
-\end{enumerate}
+\textbf{Domain-specific feature engineering} (e.g., type advantage), use of a \textbf{Stacking Ensemble} to combine linear and non-linear signals,\textbf{Threshold calibration} ($\mathbf{0.466}$).
 This analysis validates the hypothesis that complex strategic features provide essential incremental predictive value that cannot be substituted by simpler features based solely on aggregated base stat differences.
