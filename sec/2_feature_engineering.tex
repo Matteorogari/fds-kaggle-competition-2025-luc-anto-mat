@@ -1,32 +1,30 @@
-\section{Feature Engineering and Modeling Architecture}
-
-The methodology focused on quantitatively representing the battle's final state using an optimized \textbf{Stacking Ensemble} architecture.
-
-\subsection{Feature Engineering}
-Features were designed based on core game mechanics (condition, power, type interactions) and grouped as follows:
-
-\subsubsection{Core Features (10 and 12 Sets)}
-These features encode \textbf{attrition} and \textbf{static potential}:
+ \section{Feature Engineering and Modeling Architecture}
+\subsection{Feature Engineering and Data Structure}
+Feature engineering was guided by the goal of quantitatively representing the battle's final state based on core game mechanics (condition, power, and type interactions). 
+Features were grouped into three main sets to evaluate the impact of dimensionality on prediction:
+\vspace*{-1.5em}
+\paragraph{Core Features (10 and 12 Sets):}
+These features encode attrition and static potential, and include:
 \begin{itemize}
-    \item Delta Mean HP and Delta Survivors: Direct measures of residual health and fighting reserve.
-    \item Total Stat Differences: Deltas in summed base statistics ($\Delta \text{Atk}$, $\Delta \text{Spe}$, $\Delta \text{HP}$) to model raw static power advantage.
+    \item Delta Mean HP and Delta Survivors: Direct indicators of residual health and remaining fighting reserve.
+    \item Delta Status/Effect Score: Measures the strategic pressure exerted on a team via status ailments (e.g., poison) or field effects (e.g., hazards).
+    \item Total Stat Differences: Deltas in the sums of base statistics ($\Delta$ Atk, $\Delta$ Spe, $\Delta$ HP) across all Pokémon, used to model the raw static power advantage.
 \end{itemize}
-
-\subsubsection{Strategic Features (17 Set Only)}
-These features capture complex, dynamic aspects essential for predictive reliability:
+\vspace*{-1.5em}
+\paragraph{Strategic Features (17 Set Only):}
+To enhance predictive reliability, features capturing complex strategic and dynamic aspects were added:
 \begin{itemize}
-    \item \textbf{Meta Type Advantage Metric:} Calculated based on cross-damage multipliers, recognizing the type system as the most critical $matchup$ mechanic.
-    \item \textbf{Weighted Active Leader Power:} An index prioritizing \textbf{Speed (Spe)} to reflect the strategic value of initiative.
+    \item Meta Type Advantage Metric: Features calculated based on cross-damage multipliers between a team's offensive types and the opponent's defensive resistances. \textbf{Rationale:} The type system is the most critical $matchup$ mechanic; its inclusion is strategic.
+    \item Weighted Active Leader Power: An index calculated on the stats of the active Pokémon in the last turn, with higher weight assigned to Speed (Spe), to reflect the strategic value of initiative.
 \end{itemize}
-
 \subsection{Stacking Ensemble Architecture}
-All methodologies adopted a \textbf{Stacking Ensemble} architecture , combining the stability of linear models with the non-linearity of tree-based models.
-
-\subsubsection{Tier-0 Base Learners}
+All methodologies adopted a \textbf{Stacking Ensemble} architecture, justified by the necessity of combining the stability of linear models with the non-linearity resolving power of tree-based models. 
+\vspace*{-1.5em}
+\paragraph{Tier-0 Base Learners:}
 The model set was diversified to ensure the complementarity of Out-Of-Fold (OOF) predictions:
 \begin{itemize}
-    \item \textbf{Logistic Regression (LR):} Provides low-bias, high-stability predictions, ensuring low correlation with tree models.
-    \item \textbf{Boosting Models (XGBoost, HGBT):} Capture non-linear interactions, offering high accuracy.
-    \item \textbf{Random Forest and KNN:} Included for ensemble (RF) and non-parametric (KNN) data perspectives.
+    \item Logistic Regression (LR): Provides a low-bias, high-stability prediction. Its OOF probabilities are less correlated with those of tree models, making them a valuable input for the Tier-1.
+    \item Boosting Models (XGBoost, HGBT): Trained to capture non-linear interactions between features. Although more prone to variance, they offer high accuracy on complex problems.
+    \item Random Forest and KNN: Included to provide ensemble (RF) and non-parametric (KNN) methods capturing different data perspectives.
 \end{itemize}
-Hyperparameter calibration used $\texttt{GridSearchCV}$ or $\texttt{RandomizedSearchCV}$, optimizing the models based on the \textbf{Log Loss} metric.
+Hyperparameter calibration for all models was performed via \texttt{GridSearchCV} or \texttt{RandomizedSearchCV} using the \textbf{Log Loss} as the primary scoring metric.
