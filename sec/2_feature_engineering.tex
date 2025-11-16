@@ -2,16 +2,16 @@
 \subsection{Feature Engineering and Data Structure}
 Feature engineering was guided by the goal of quantitatively representing the battle's final state based on core game mechanics (condition, power, and type interactions). 
 Features were grouped into three main sets to evaluate the impact of dimensionality on prediction:
-\vspace*{-1.5em}
-\paragraph{Core Features (10 and 12 Sets):}
+
+\paragraph{Core Features (10 and 12 Sets):} \\
 These features encode attrition and static potential, and include:
 \begin{itemize}
     \item Delta Mean HP and Delta Survivors: Direct indicators of residual health and remaining fighting reserve.
     \item Delta Status/Effect Score: Measures the strategic pressure exerted on a team via status ailments (e.g., poison) or field effects (e.g., hazards).
     \item Total Stat Differences: Deltas in the sums of base statistics ($\Delta$ Atk, $\Delta$ Spe, $\Delta$ HP) across all Pokémon, used to model the raw static power advantage.
 \end{itemize}
-\vspace*{-1.5em}
-\paragraph{Strategic Features (17 Set Only):}
+
+\paragraph{Strategic Features (17 Set Only):} \\
 To enhance predictive reliability, features capturing complex strategic and dynamic aspects were added:
 \begin{itemize}
     \item Meta Type Advantage Metric: Features calculated based on cross-damage multipliers between a team's offensive types and the opponent's defensive resistances. \textbf{Rationale:} The type system is the most critical $matchup$ mechanic; its inclusion is strategic.
