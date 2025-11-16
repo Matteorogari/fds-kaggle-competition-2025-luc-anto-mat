@@ -1,44 +1,10 @@
 \section{Methodological Analysis and Results}
 
 \subsection{Impact of Feature Set on Performance}
-The analysis demonstrates that prediction accuracy and reliability (Log Loss) are directly dependent on the richness of integrated strategic features.
-
-\begin{table}[h]
-\centering
-\caption{Comparative Performance of Explored Methodologies}
-\label{tab:performance}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{l|c|c|c|c}
-\toprule
-Methodology & N. Features & Tier-1 Meta-Model & LOG\_LOSS (OOF) & Max Accuracy (CV) \\
-\midrule
-Strategic Set & 17 & XGBoost & \textbf{0.347578} & \textbf{0.852585} \\
-Intermediate Set & 12 & XGBoost & 0.363638 & 0.848485 \\
-Restricted Set & 10 & LR & 0.364878 & 0.849785 \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
+The analysis demonstrates that prediction accuracy and reliability (Log Loss) are directly dependent on the richness of integrated strategic features. The \textbf{Strategic Set (17 Features)} achieved the best performance (see Table \ref{tab:performance} in the Appendix).
 
 \subsection{Role of the Meta-Model (Tier-1)}
-The weight analysis of the successfully implemented Meta-Model (XGBoost on 17 features) shows that its primary function was to balance linear and non-linear signals:
-
-\begin{table}[h]
-\centering
-\caption{Tier-1 Model Weights (XGBoost Meta on 17 Features)}
-\label{tab:weights}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{l|c|l}
-\toprule
-Base Model & Importance (Weight) & Justification \\
-\midrule
-LR\_LITE & $42.81\%$ & Provides an orthogonal (low-correlation) signal to tree models, stabilizing the ensemble. \\
-LR (Full) & $36.85\%$ & Reinforces the linear component of the prediction. \\
-XGBoost / HGBT / RF & $20.34\%$ & Adds the capacity to correct complex classification errors that LR, by its nature, cannot resolve. \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
+The weight analysis of the successfully implemented Meta-Model (XGBoost on 17 features) shows that its primary function was to balance linear and non-linear signals. As detailed in Table \ref{tab:weights}, linear models (LR) constituted the stable base, while boosting models refined the result.
 
 This outcome justifies the Stacking approach: simpler models (LR) form the stable base, while boosting models (XGBoost) refine the final result.
 
@@ -46,9 +12,10 @@ This outcome justifies the Stacking approach: simpler models (LR) form the stabl
 It is observed that when using the Restricted Set (10 features), the most effective Meta-Model was the Logistic Regression (LR Meta). This suggests that for less complex inputs, the interactions between Tier-0 models are already largely linear, not justifying the added complexity of an XGBoost Meta-Model.
 \par
 \vfill % Riempie lo spazio verticale rimanente
-\break % <--- Utilizza il comando nativo \break
+\break % Utilizza il comando nativo \break
+
 \subsection{Final Calibration}
 The optimal classification threshold determined for the 17-feature methodology was $\mathbf{0.466}$. This value, lower than the neutral threshold of $0.5$, indicates that the aggregated model tended to be slightly conservative in predicting Player 1's victory, and threshold optimization was necessary to maximize overall accuracy on the validation set.
 
 \section{Conclusions}
-The Pokémon battle prediction task demonstrated that maximum accuracy (Log Loss $0.347578$, Accuracy $85.26\%$), in the local, is achieved through the integration of three methodological elements: \textbf{domain-specific feature engineering} (type advantage), the use of a \textbf{Stacking Ensemble} to combine linear and non-linear signals, and threshold calibration. The analysis validates the hypothesis that complex strategic features provide incremental predictive value that cannot be replicated by features based solely on aggregated base stat differences.
+The Pokémon battle prediction task demonstrated that maximum accuracy (Log Loss $0.347578$, Accuracy $85.26\%$) is achieved through the integration of three methodological elements: \textbf{domain-specific feature engineering} (type advantage), the use of a \textbf{Stacking Ensemble} to combine linear and non-linear signals, and threshold calibration. The analysis validates the hypothesis that complex strategic features provide incremental predictive value that cannot be replicated by features based solely on aggregated base stat differences.
