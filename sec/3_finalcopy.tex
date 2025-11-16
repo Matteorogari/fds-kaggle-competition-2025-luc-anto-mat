@@ -1,11 +1,12 @@
 \section{Methodological Analysis and Results Summary}
 \subsection{Performance and Feature Impact}
 The analysis confirmed a direct relationship between the \textbf{richness of strategic features} and prediction performance. The \textbf{Strategic Set (17 Features)} yielded the best result (Log Loss $0.347578$), significantly outperforming simpler feature sets (refer to Table \ref{tab:performance} in the Appendix).
-\subsection{Stacking Ensemble Role}
-The primary function of the Tier-1 Meta-Model (XGBoost) was to \textbf{balance linear and non-linear predictive signals}. Linear models (LR) formed the stable foundation (contributing the majority of weight), while boosting models (XGBoost/HGBT) provided the necessary refinement to correct complex classification errors (detailed in Table \ref{tab:weights}). This outcome fully justifies the \textbf{Stacking Ensemble} approach.
+\subsection{Stacking Ensemble Role (Condensed)}
+The Tier-1 Meta-Model (XGBoost) was employed primarily to \textbf{balance linear and non-linear predictive signals}. The ensemble's effectiveness stems from using robust \textbf{Linear Models (LR)} as the stable base (majority weight), while \textbf{Boosting Models} refined predictions by correcting complex classification errors (Table \ref{tab:weights}). This structure validates the \textbf{Stacking Ensemble} architecture.
 \noindent
 \par
-\paragraph{Meta-Model Selection:} When using the less complex Restricted Set (10 features), the optimal Meta-Model was Logistic Regression (LR Meta), suggesting that for lower dimensionality inputs, the added complexity of XGBoost was unnecessary.
+\paragraph{Meta-Model Selection:}
+For less complex inputs (Restricted Set), a simpler \textbf{Logistic Regression (LR Meta)} was found to be optimal, indicating that the added complexity of XGBoost is only justified for richer feature sets.
 \subsection{Classification Threshold Calibration}
 The \textbf{optimal classification threshold} was set at $\mathbf{0.466}$ (lower than the neutral $0.5$). This adjustment was crucial to maximize overall accuracy, compensating for the aggregated model's slight tendency to be conservative in predicting Player 1's victory.
 \section{Conclusions}
