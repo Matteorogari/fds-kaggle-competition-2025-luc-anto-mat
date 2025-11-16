@@ -1,0 +1,40 @@
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix} % Aggiunge "Appendix" all'indice (se usato)
+
+% Imposta la numerazione delle tabelle come A1, A2, etc. per l'appendice
+\setcounter{table}{0} 
+\renewcommand{\thetable}{A\arabic{table}} 
+
+\begin{table}[h]
+\centering
+\caption{Comparative Performance of Explored Methodologies}
+\label{tab:performance}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{l|c|c|c|c}
+\toprule
+Methodology & N. Features & Tier-1 Meta-Model & LOG\_LOSS (OOF) & Max Accuracy (CV) \\
+\midrule
+Strategic Set & 17 & XGBoost & \textbf{0.347578} & \textbf{0.852585} \\
+Intermediate Set & 12 & XGBoost & 0.363638 & 0.848485 \\
+Restricted Set & 10 & LR & 0.364878 & 0.849785 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Tier-1 Model Weights (XGBoost Meta on 17 Features)}
+\label{tab:weights}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{l|c|l}
+\toprule
+Base Model & Importance (Weight) & Justification \\
+\midrule
+LR\_LITE & $42.81\%$ & Provides an orthogonal (low-correlation) signal to tree models, stabilizing the ensemble. \\
+LR (Full) & $36.85\%$ & Reinforces the linear component of the prediction. \\
+XGBoost / HGBT / RF & $20.34\%$ & Adds the capacity to correct complex classification errors that LR, by its nature, cannot resolve. \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
