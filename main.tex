@@ -6,6 +6,8 @@
 \linespread{0.98}\selectfont % Riduzione dell'interlinea (densificazione verticale)
 \setlength{\parskip}{0pt} % Rimozione dello spazio tra i paragrafi
 \usepackage{etoolbox} % <--- AGGIUNTO: Necessario per \patchcmd
+\usepackage{booktabs} % <--- AGGIUNTO: Necessario per \toprule, \midrule, \bottomrule
+\usepackage{graphicx} % <--- AGGIUNTO: Necessario per \resizebox
 
 % Import additional packages in the preamble file, before hyperref
 \input{preamble}
@@ -45,5 +47,7 @@ Università degli Studi di Roma "La Sapienza"\\
 
 % WARNING: do not forget to delete the supplementary pages from your submission 
 % \input{sec/X_suppl}
+\clearpage
+\input{appendix}
 
 \end{document}
