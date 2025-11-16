@@ -29,8 +29,8 @@ Università degli Studi di Roma "La Sapienza"\\
 
 % --- INIZIO PATCH PER SPOSTARE IL TITOLO IN ALTO ---
 \makeatletter
-% Rimuove lo spazio verticale all'inizio del documento (da .375in a 0in per spostare in alto)
-\patchcmd{\@maketitle}{\vskip .375in}{\vskip 0in}{}{} % <--- CAMBIA QUI: da .15in a 0in
+% Rimuove lo spazio verticale all'inizio del documento (da .375in a -0.5in per spostare in alto)
+\patchcmd{\@maketitle}{\vskip .375in}{\vskip -0.5in}{}{} % <--- CAMBIA QUI: esempio con valore negativo
 % Rimuove lo spazio verticale sotto il blocco autori (da 12pt a 0pt per compattare)
 \patchcmd{\@maketitle}{\vspace*{12pt}}{\vspace*{0pt}}{}{}
 \makeatother
