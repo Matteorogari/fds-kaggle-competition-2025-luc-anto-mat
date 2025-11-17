@@ -1,5 +1,5 @@
 # Super-Team of Trainers: Ensemble Stacking for Pokémon Battle Prediction
-<img src="./assets/team.jpg" width="70%"/>
+<img src="./assets/team.jpg" width="55%"/>
 This repository contains the code and methodology for the project: **Super-Team of Trainers: Modeling Complex Outcomes with an Ensemble Stacking Approach to Pokémon Battle Prediction**.
 
 The project addresses the task of predicting simulated Pokémon battle outcomes by modeling the problem as a **binary classification** task to estimate Player 1's victory probability.
@@ -11,7 +11,7 @@ The project addresses the task of predicting simulated Pokémon battle outcomes 
 This report analyzes the machine learning methodologies developed for the Pokémon Battle Prediction competition. The problem is modeled as a binary classification task to estimate Player 1's victory probability, based on three systematically varied sets of input features. The core approach across all implementations is a **Two-Level Stacking Ensemble**, which leverages the complementarity between linear predictors (Logistic Regression) and boosting models (XGBoost, HGBT). The results strongly demonstrate that integrating **domain-specific metrics**, specifically those that quantify strategic type advantage and residual in-battle power, is essential for maximizing predictive reliability.
 
 ---
-<img src="./assets/Pirate.jpg" width="70%"/>
+<img src="./assets/Pirate.jpg" width="55%"/>
 ## 🧠 Modeling Architecture: Stacking Ensemble
 
 The Stacking Ensemble architecture was chosen to combine the **stability of linear models** with the **non-linearity resolving power of tree-based models**. 
@@ -23,7 +23,7 @@ The base model set was diversified to ensure the complementarity of Out-Of-Fold 
 * **Boosting Models (XGBoost, HGBT):** For capturing non-linear interactions.
 
 ### Tier-1 Meta-Model Weights (XGBoost)
-<img src="./assets/pika.png" width="70%"/>
+<img src="./assets/pika.png" width="55%"/>
 The Tier-1 **XGBoost Meta-Model** effectively balances these signals, prioritizing linear stability:
 
 | Base Model | Importance (Weight) | Role |
@@ -52,5 +52,5 @@ The performance boost was driven by these domain-specific metrics:
 * **`sec/`**: Individual sections of the LaTeX document.
 * **`src/`**: Source code and modeling scripts (e.g., `main17.py`).
 * **`main.tex`**: The main LaTeX document file.
-<img src="./assets/comp.png" width="70%"/>
+<img src="./assets/comp.png" width="55%"/>
 
