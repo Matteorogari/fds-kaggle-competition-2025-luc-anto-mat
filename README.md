@@ -29,7 +29,7 @@ The base model set was diversified to ensure the complementarity of Out-Of-Fold 
 
 ### Tier-1 Meta-Model Weights (XGBoost)
 <div align="center">
-  <img src="./assets/pika.png" width="55%"/>
+  <img src="./assets/pika.png" width="35%">
 <\div>
 The Tier-1 **XGBoost Meta-Model** effectively balances these signals, prioritizing linear stability:
 
