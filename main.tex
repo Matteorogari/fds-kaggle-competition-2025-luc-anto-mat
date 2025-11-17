@@ -8,7 +8,7 @@
 \usepackage{etoolbox} % <--- AGGIUNTO: Necessario per \patchcmd
 \usepackage{booktabs} % <--- AGGIUNTO: Necessario per \toprule, \midrule, \bottomrule
 \usepackage{graphicx} % <--- AGGIUNTO: Necessario per \resizebox
-
+\usepackage{relsize
 % Import additional packages in the preamble file, before hyperref
 \input{preamble}
 
@@ -49,9 +49,8 @@ Università degli Studi di Roma "La Sapienza"\\
 
 % WARNING: do not forget to delete the supplementary pages from your submission 
 % \input{sec/X_suppl}
-
+{\smaller
 \begin{thebibliography}{99} 
-\fontsize{8pt}{10pt}
 \bibitem{Hastie2009}
 Trevor Hastie, Robert Tibshirani, Jerome Friedman. Chapter 3/4: LinearMethods for Regression and Linear Methods for Classification. The elements of statistical learning: data mining, inference, and prediction. Springer, 2017.
 \bibitem{Tom}
@@ -59,7 +58,7 @@ Tom Mitchell. Chapter 3: Decision Tree Learning. Learning, Machine. McGraw Hill 
 \bibitem{BazaverseGuida}
 Guida Completa al Competitive Battling in Pokémon Rosso, Blu e Giallo. Disponibile su: \url{https://bazaverse.com/2025/02/14/guida-completa-al-competitive-battling-in-pokemon-rosso-blu-e-giallo/}.
 
-\end{thebibliography}
+\end{thebibliography}}
 % --- FINE BIBLIOGRAFIA MANUALE ---
 
 
