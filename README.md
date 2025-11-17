@@ -2,7 +2,7 @@
 <div align="center">
    <img src="./assets/team.jpg" width="55%"/>
 </div>
-This repository contains the code and methodology for the project: **Super-Team of Trainers: Modeling Complex Outcomes with an Ensemble Stacking Approach to Pokémon Battle Prediction**.
+This repository contains the code and methodology for the project:  **Super-Team of Trainers: Modeling Complex Outcomes with an Ensemble Stacking Approach to Pokémon Battle Prediction**  .
 
 The project addresses the task of predicting simulated Pokémon battle outcomes by modeling the problem as a **binary classification** task to estimate Player 1's victory probability.
 
