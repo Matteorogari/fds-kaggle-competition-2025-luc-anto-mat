@@ -28,9 +28,6 @@ The base model set was diversified to ensure the complementarity of Out-Of-Fold 
 * **Boosting Models (XGBoost, HGBT):** For capturing non-linear interactions.
 
 ### Tier-1 Meta-Model Weights (XGBoost)
-<div align="center">
-  <img src="./assets/pika.png" width="35%">
-<\div>
 The Tier-1 **XGBoost Meta-Model** effectively balances these signals, prioritizing linear stability:
 
 | Base Model | Importance (Weight) | Role |
@@ -38,6 +35,9 @@ The Tier-1 **XGBoost Meta-Model** effectively balances these signals, prioritizi
 | **LR LITE** | **42.81%** | Provides a stable (low-correlation) signal to tree models, stabilizing the ensemble. |
 | XGBoost / HGBT / RF | 20.34% | Adds the capacity to correct complex classification errors that LR, by its nature, cannot resolve. |
 
+<div align="center">
+  <img src="./assets/pika.png" width="35%">
+</div>
 ---
 
 ## ⚙️ Feature Engineering: Domain-Specific Metrics
